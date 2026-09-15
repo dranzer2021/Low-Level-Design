@@ -13,7 +13,7 @@ private:
     map<string, string> headers;
     map<string,string> queryParams;
     string body;
-    int timeout; // in seconds
+    int timeout; 
 
     // Private constructor - can only be accessed by the Builder
     HttpRequest() { }
