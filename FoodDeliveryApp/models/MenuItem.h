@@ -17,7 +17,7 @@ class MenuItem {
         this->price = price;
     }
 
-    string getCode() {
+    string getCode() const {
         return code;
     }
 
@@ -25,7 +25,7 @@ class MenuItem {
         code = c;
     }
 
-    string getName() {
+    string getName() const {
         return name;
     }
 
@@ -33,7 +33,7 @@ class MenuItem {
         name = n;
     }
 
-    int getPrice() {
+    int getPrice() const {
         return price;
     }
 

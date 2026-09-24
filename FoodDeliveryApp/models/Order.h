@@ -1,0 +1,102 @@
+#ifndef ORDER_H
+#define ORDER_H
+
+#include<iostream>
+#include<string>
+#include<vector>
+#include"User.h"
+#include"Restaurant.h"
+#include"MenuItem.h"
+#include"../strategies/PaymentStrategy.h"
+#include"../utils/TimeUtils.h"
+using namespace std;
+
+class Order
+{
+private:
+    static int nextOrderId;
+    int orderId;
+    User* user;
+    Restaurant* restaurant;
+    vector<MenuItem> items;
+    PaymentStrategy* paymentStrategy;
+    double total;
+    string scheduled;
+public:
+    Order() {
+        user = nullptr;
+        restaurant = nullptr;
+        paymentStrategy = nullptr;
+        total = 0.0;
+        scheduled = "";
+        orderId = ++nextOrderId;
+    }
+    virtual ~Order() {
+        delete paymentStrategy;
+    }
+
+    virtual string getType() const = 0;
+
+    bool processPayment() {
+        if(paymentStrategy) {
+            paymentStrategy->pay(total);
+            return true;
+        }
+        else {
+            cout<<"Please choose a payment mode first."<<endl;
+            return false;
+        }
+    }
+
+    int getOrderId() const {
+        return orderId;
+    }
+
+    User* getUser() const {
+        return user;
+    }
+    void setUser(User* u) {
+        user = u;
+    }
+
+    Restaurant* getRestaurant() const {
+        return restaurant;
+    }
+    void setRestaurant(Restaurant* res) {
+        restaurant = res;
+    }
+
+    const vector<MenuItem>& getItems() const {
+        return items;
+    }
+    void setItem(const vector<MenuItem>& its) {
+        items = its;
+        total = 0;
+        for(auto &i : items) {
+            total += i.getPrice();
+        }
+    }
+    void setPaymentStrategy(PaymentStrategy* p) {
+        paymentStrategy = p;
+    }
+
+    void setScheduled(const string& s) {
+        scheduled = s;
+    }
+
+    string getScheduled() const {
+        return scheduled;
+    }
+
+    double getTotal() const {
+        return total;
+    }
+
+    void setTotal(int total) {
+        this->total = total;
+    }
+
+};
+int Order::nextOrderId = 0;
+
+#endif
