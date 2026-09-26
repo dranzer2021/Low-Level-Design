@@ -15,7 +15,7 @@ private:
         currentOutputDevice = nullptr;
     }
 public:
-    DeviceManager* getInstance() {
+    static DeviceManager* getInstance() {
         if(!instance) {
             instance = new DeviceManager();
         }

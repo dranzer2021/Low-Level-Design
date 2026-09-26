@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "../models/Song.hpp"
-#include "IAudioOutputDevice.hpp"
+#include "../device/IAudioOutputDevice.hpp"
 
 using namespace std;
 
@@ -36,7 +36,7 @@ public:
 
         currentSong = song;
         songIsPaused = false;
-        cout<<"Playing Song : "<<currentSong<<endl;
+        cout<<"Playing Song : "<<currentSong->getTitle()<<endl;
         aod->playAudio(song);
     }
 
