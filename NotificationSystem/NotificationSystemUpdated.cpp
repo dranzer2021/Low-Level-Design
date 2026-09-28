@@ -1,3 +1,6 @@
+//Updating Concrete Observers : Logger & Notification Engine
+
+
 #include<iostream>
 #include<vector>
 #include<string>
@@ -109,11 +112,46 @@ class NotificationObservable : public IObservable {
         }
     }
 };
+
+class NotificationService {
+    NotificationObservable* observable;
+    vector<INotification*> notifications;
+    static NotificationService* instance;
+    NotificationService() {
+        // private constructor
+        observable = new NotificationObservable();
+    }
+    public:
+    static NotificationService* getInstance() {
+        if(!instance) {
+            instance = new NotificationService();
+        }
+        return instance;
+    }
+    NotificationObservable* getObservable() {
+        return observable;
+    }
+    void sendNotification(INotification* notification) {
+        notifications.push_back(notification);
+        observable->setNotification(notification);
+    }
+    ~NotificationService() {
+        delete observable;
+    }
+};
+NotificationService* NotificationService::instance = nullptr;
+
 class Logger : public IObserver {
     NotificationObservable* notificationObservable;
     public:
+
+    Logger() {
+        this->notificationObservable = NotificationService::getInstance()->getObservable();
+        notificationObservable->addObserver(this);
+    }
     Logger(NotificationObservable* observable) {
         this->notificationObservable = observable;
+        notificationObservable->addObserver(this);
     }
     void update() {
         cout << "Logging New Notification : \n" << notificationObservable->getNotificationContent();
@@ -157,6 +195,10 @@ class NotificationEngine : public IObserver {
     vector<INotificationStrategy*> notificationStrategies;
 
     public:
+    NotificationEngine() {
+        this->notificationObservable = NotificationService::getInstance()->getObservable();
+        notificationObservable->addObserver(this);
+    }
     NotificationEngine(NotificationObservable* observable) {
         this->notificationObservable = observable;
     }
@@ -172,47 +214,15 @@ class NotificationEngine : public IObserver {
     }
 };
 
-class NotificationService {
-    NotificationObservable* observable;
-    vector<INotification*> notifications;
-    static NotificationService* instance;
-    NotificationService() {
-        // private constructor
-        observable = new NotificationObservable();
-    }
-    public:
-    static NotificationService* getInstance() {
-        if(!instance) {
-            instance = new NotificationService();
-        }
-        return instance;
-    }
-    NotificationObservable* getObservable() {
-        return observable;
-    }
-    void sendNotification(INotification* notification) {
-        notifications.push_back(notification);
-        observable->setNotification(notification);
-    }
-    ~NotificationService() {
-        delete observable;
-    }
-};
-NotificationService* NotificationService::instance = nullptr;
-
 int main() {
     NotificationService* notificationService = NotificationService::getInstance();
-    NotificationObservable* notificationObservable = notificationService->getObservable();
 
-    Logger* logger = new Logger(notificationObservable);
-    NotificationEngine* notificationEngine = new NotificationEngine(notificationObservable);
+    Logger* logger = new Logger();
+    NotificationEngine* notificationEngine = new NotificationEngine();
 
     notificationEngine->addNotificationStrategy(new EmailStrategy("random.person@gmail.com"));
     notificationEngine->addNotificationStrategy(new SMSStrategy("+91 9876543210"));
     notificationEngine->addNotificationStrategy(new PopUpStrategy());
-
-    notificationObservable->addObserver(logger);
-    notificationObservable->addObserver(notificationEngine);
 
     INotification* notification = new SimpleNotification("Your Order is Out for Delivery! ");
     notification = new TimeStampDecorator(notification);
