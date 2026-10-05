@@ -218,7 +218,7 @@ class PaymentController {
     PaymentController& operator=(const PaymentController&) = delete;
 
 public:
-    static PaymentController& getInstance() {
+    static PaymentController& getInstance() { 
         return instance;
     }
     bool handlePayment(GatewayType type, PaymentRequest* req) {
