@@ -248,8 +248,8 @@ class SeasonalOffer : public Coupon {
             if(item->getProduct()->getCategory() == category) {
                 subtotal += item->itemTotal();
             }
-            return ds->calculate(subtotal);
         }
+        return ds->calculate(subtotal);
     }
     bool isCombinable() override {
         return true;
